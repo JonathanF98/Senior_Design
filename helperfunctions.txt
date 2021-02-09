@@ -1,0 +1,108 @@
+############################# FUNCTION - DEFINITIONS ################################
+
+#############################
+# Helper Functions For Modes
+#############################
+def user_mode_select():
+
+#buttons
+#ok button
+def ok_button_pressed():
+	if GPIO.input(11):
+		return 1
+	else:
+		return 0
+
+#up button
+def up_button_pressed():
+	if GPIO.input(10):
+		return 1
+	else:
+		return 0
+
+#down button
+def down_button_pressed():
+	if GPIO.input(14):
+		return 1
+	else:
+		return 0
+
+#left button 
+def left_button_pressed():
+	if GPIO.input(18):
+		return 1
+	else:
+		return 0
+
+#right button
+def right_button_pressed():
+	if GPIO.input(22):
+		return 1
+	else:
+		return 0
+	
+#def led_on(index):
+def led_on(LED):
+	command = bytearray(b'\x01\x13')
+	command.append(LED)
+	command.extend(b'\x00\x01')
+	CHKSUM = generate_CHKSUM(command)
+	command.append(CHKSUM)
+	ser.write(command)
+
+#def led_off(index):
+def led_off(LED):
+	command = bytearray(b'\x01\x13')
+	command.append(LED)
+	command.extend(b'\x00\x00')
+	CHKSUM = generate_CHKSUM(command)
+	command.append(CHKSUM)
+	ser.write(command)
+ 
+#changing digits
+# def change_dig(value):
+# 	command = bytearray(b'\x01\x0F\x00')
+# 	#insert value conversion
+# 	CHKSUM = generate_CHKSUM(command)
+# 	command.append(CHKSUM)
+#  	ser.write(command)
+
+
+#changing labels
+def change_lable(label, message):
+	command = bytearray(b'\x0C')
+	command.append(label)
+	length = len(message)
+	command.append(length)
+	text = message.encode(encoding = "ascii")
+	command.append(text)
+	CHKSUM = generate_CHKSUM(command)
+	command.append(CHKSUM)
+	ser.write(command)
+ 
+
+def change_form(form): 			#Allows change of global variable "currentForm" without keyword
+	global currentForm 
+	currentForm = form
+	command = bytearray(b'\x01\x0A')
+	if(form == 1):
+		command.append(FORM_1_INDEX)								# add in binary, more than one 1, equals 0. otherwise 1
+	elif(form == 2):
+		command.append(FORM_2_INDEX)
+	elif(form == 3):
+		command.append(FORM_3_INDEX)
+	elif(form == 4):
+		command.append(FORM_4_INDEX)
+	elif(form == 5):
+		command.append(FORM_5_INDEX)
+	elif(form == 6):
+		command.append(FORM_6_INDEX)
+	elif(form == 7):
+		command.append(FORM_7_INDEX)
+	command.extend(bytearray(b'\x00\x00'))
+	CHKSUM = generate_CHKSUM(command)
+	command.append(CHKSUM)
+	ser.write(command)
+	
+	return None
+	
